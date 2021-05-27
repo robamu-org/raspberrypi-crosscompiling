@@ -1,17 +1,17 @@
-Cross-Compiling for the Beaglebone Black
+Cross-Compiling for the Raspberry Pi
 =====
 
 This repository shows how to cross-compile a simple Hello World program and run it on
-a Beaglebone Black. It also shows how to install and setup a TCF agent on the Beaglebone Black
+a Raspberry Pi. It also shows how to install and setup a TCF agent on the Raspberry Pi
 for remote debugging with Eclipse.
 
 # Prerequisites for cross-compiling
 
 1. `CMake` installed
 2. ARM Linux cross compiler installed
-3. Beagle Bone Black sysroot folder mirrored on the host machine, using `rsync` and `scp`.
+3. Raspberry Pi sysroot folder mirrored on the host machine, using `rsync` and `scp`.
    See the related [chapter](#rootfs) for more information.
-4. Optional: `tcf-agent` running on the BBB for remote debugging with Eclipse. See the
+4. Optional: `tcf-agent` running on the Raspberry Pi for remote debugging with Eclipse. See the
    related [chapter](#tcfagent) for more information.
 
 # Windows
@@ -33,8 +33,14 @@ pacman -S mingw-w64-x86_64-cmake mingw-w64-x86_64-make rsync
 You can also run `pacman -S mingw-w64-x86_64-toolchain` to install the full build chain with
 `gcc` and `g++`
 
-1. Install the correct [ARM Linux cross-compile toolchain](https://releases.linaro.org/components/toolchain/binaries/latest-7/arm-linux-gnueabihf/)
-   provided by Linaro and unzip it somewhere. Copy the path to the `bin` folder.
+1. Install the correct [ARM Linux cross-compile toolchain provided by SysProgs](https://gnutoolchains.com/raspberry/).
+   You can find out the distribution release of your Raspberry Pi by running `cat /etc/rpi-issue`.
+
+   Test the toolchain by running:
+
+   ```sh
+   arm-linux-gnueabihf-gcc --version
+   ``` 
 
 2. Navigate into the toolchain folder inside MinGW64.
 
@@ -54,7 +60,7 @@ You can also run `pacman -S mingw-w64-x86_64-toolchain` to install the full buil
    `CMake` can use
 
    ```sh
-   export BBB_ROOTFS="<pathToRootfs>"
+   export RASPBIAN_ROOTFS="<pathToRootfs>"
    ```
 
    Note that you can add the commands in step 2 and step 3 to the `~/.bashrc` to set the path
@@ -69,11 +75,11 @@ You can also run `pacman -S mingw-w64-x86_64-toolchain` to install the full buil
    chmod +x hello
    ```
  
-5. Transfer to application to the Beaglebone Black and run it to test it
+5. Transfer to application to the Raspberry Pi and run it to test it
 
    ```sh
-   scp hello <username>@beaglebone.local:/tmp
-   ssh <username>@beaglebone.local
+   scp hello <username>@raspberrypi.local:/tmp
+   ssh <username>@raspberrypi.local
    cd /tmp
    ./hello
    ```
@@ -82,8 +88,37 @@ You can also run `pacman -S mingw-w64-x86_64-toolchain` to install the full buil
 
 Instructions for an Ubuntu host
 
-1. Install the correct [ARM Linux cross-compile toolchain](https://releases.linaro.org/components/toolchain/binaries/latest-7/arm-linux-gnueabihf/)
-   provided by Linaro and unzip it somewhere. Copy the path to the `bin` folder.
+1. Install the pre-built ARM cross-compile with the following command
+
+    ```sh
+    wget https://github.com/Pro/raspi-toolchain/releases/latest/download/raspi-toolchain.tar.gz
+    ```
+
+   Then extract to the opt folder:
+   
+   ```sh
+   sudo tar xfz raspi-toolchain.tar.gz --strip-components=1 -C /opt
+   ```
+   
+   Please note that this version of the toolchain might become obsolete in the future.
+   If another toolchain installation is used, it is still recommended to unpack the toolchain in the 
+   `/opt/cross-pi-gcc` folder so that the Eclipse configuration and helper 
+   scripts work without adaptions. Add the folder to the system path. On Linux,
+   this can generally be done with the following command
+
+   ```sh
+   export PATH=$PATH:"/opt/cross-pi-gcc/bin"
+   ``` 
+
+   You can add this line to the `.bashrc` or `.profile` file in the `$HOME` directory 
+   to add environmental variables permanently. More experienced users can
+   perform this step is a shell script which is `source`d to keep the environment clean.
+
+   Test the toolchain with the following command
+
+   ```sh
+   arm-linux-gnueabihf-gcc --version
+   ``` 
 
 2. Navigate into the toolchain folder.
 
@@ -103,7 +138,7 @@ Instructions for an Ubuntu host
    `CMake` can use
 
    ```sh
-   export BBB_ROOTFS="<pathToRootfs>"
+   export RASPBIAN_ROOTFS="<pathToRootfs>"
    ```
 
    Note that you can add the commands in step 2 and step 3 to the `~/.bashrc` to set the path
@@ -118,11 +153,11 @@ Instructions for an Ubuntu host
    chmod +x hello
    ```
 
-5. Transfer to application to the Beaglebone Black and run it to test it
+5. Transfer to application to the Raspberry Pi and run it to test it
 
    ```sh
-   scp hello <username>@beaglebone.local:/tmp
-   ssh <username>@beaglebone.local
+   scp hello <username>@raspberrypi.local:/tmp
+   ssh <username>@raspberrypi.local
    cd /tmp
    ./hello
    ```
@@ -130,17 +165,17 @@ Instructions for an Ubuntu host
 # <a id="rootfs"></a> Cloning the root filesystem
 
 You can also download a basic root filesystem with `libgpiod` installed
-from [here](https://drive.google.com/drive/folders/10CfrDEREHTsbUF-FdUp1ihx1mSFhUTRM?usp=sharing).
+from [here](https://drive.google.com/file/d/10o7Mrp4hzJyqTw3xzyr4AQDCxJSEvYIS/view?usp=sharing).
 
 ## Linux Host
 
 Set up a sysroot folder on the local host machine. Make sure the SSH connection to
-the BBB is working without issues. Then perform the following steps
+the Raspberry Pi is working without issues. Then perform the following steps
 
 ```sh
 cd $HOME
-mkdir beaglebone
-cd beaglebone
+mkdir raspberrypi
+cd raspberrypi
 mkdir rootfs
 cd rootfs
 pwd
@@ -148,12 +183,12 @@ pwd
 
 Store the result of `pwd`, it is going to be used by `rsync` later.
 
-Now use `rsync` to clone the BBB sysroot to the local host machine.
-You can replace `<ip-address>` with `beaglebone.local` to use DNS.
+Now use `rsync` to clone the Raspberry Pi sysroot to the local host machine.
+You can replace `<ip-address>` with `raspberrypi.local` to use DNS.
 Use the rootfs location stored from the previous steps as `<rootfs-path>`.
 
 ```sh
-rsync -avHAXR --delete-after --info=progress2 --numeric-ids <user_name>@<ip_address>:/{usr,lib} <rootfs_path>
+rsync -avHAXR --delete-after --info=progress2 --numeric-ids <user_name>@<ip_address>:/{lib,usr,opt/vc/lib} <rootfs_path>
 ```
 
 On Linux, it is recommended to repair some symlinks which can be problematic:
@@ -195,12 +230,12 @@ repository and to run `git config --global core.autocrlf true` for git in
 MinGW64.
 
 Set up a sysroot folder on the local host machine. Make sure the SSH connection to
-the BBB is working without issues. Then perform the following steps
+the Raspberry Pi is working without issues. Then perform the following steps
 
 ```sh
 cd /c/Users/<UserName>
-mkdir beaglebone
-cd beaglebone
+mkdir raspberrypi
+cd raspberrypi
 mkdir rootfs
 cd rootfs
 pwd
@@ -208,12 +243,12 @@ pwd
 
 Store the result of `pwd`, it is going to be used by `rsync` later.
 
-Now use rsync to clone the BBB sysroot to the local host machine.
-You can replace `<ip-address>` with `beaglebone.local` to use DNS.
+Now use rsync to clone the RPi sysroot to the local host machine.
+You can replace `<ip-address>` with `raspberrypi.local` to use DNS.
 Use the rootfs location stored from the previous steps as `<rootfs-path>`.
 
 ```sh
-rsync -avHAXR --numeric-ids --info=progress2 <username>@<ip-address>:/{lib,usr} <rootfs-path>
+rsync -avHAXR --numeric-ids --info=progress2 <username>@<ip-address>:/{lib,usr,opt/vc/lib} <rootfs-path>
 ```
 
 Please note that `rsync` sometimes does not copy shared libraries or symlinks properly,
@@ -228,15 +263,15 @@ scp <user_name>@<ip-address>:/usr/lib/arm-linux-gnueabihf/{libpthread.so,libc.so
 For more information on issues which can occur when cloning the root filesystem,
 see the [troubleshooting](#troubleshooting) section.
 
-# <a id="tcfagent"></a> Installing the TCF agent on the Beaglebone Black
+# <a id="tcfagent"></a> Installing the TCF agent on the Raspberry Pi
 
 The [TCF agent](https://wiki.eclipse.org/TCF) allows comfortable
 Eclipse remote debugging and other features like a remote  file explorer in Eclipse.
-The following steps show how to setup the TCF agent on the BBB and add it to the
+The following steps show how to setup the TCF agent on the Raspberry Pi and add it to the
 auto-startup applications. The steps are based
 on [this guide](https://wiki.eclipse.org/TCF/Raspberry_Pi)
 
-1. Install required packages on the BBB
+1. Install required packages on the Raspberry Pi
 
    ```sh
    sudo apt-get install git uuid uuid-dev libssl-dev
@@ -269,7 +304,7 @@ on [this guide](https://wiki.eclipse.org/TCF/Raspberry_Pi)
    sudo update-rc.d tcf-agent defaults
    ```
 
-5. Restart the BBB and verify the tcf-agent is running with the following command
+5. Restart the Raspberry Pi and verify the tcf-agent is running with the following command
 
    ```sh
    systemctl status tcf-agent
@@ -288,9 +323,9 @@ on [this guide](https://wiki.eclipse.org/TCF/Raspberry_Pi)
    files to the system root and then add the repository as an Eclipse project to get started. 
    Only select the root folder check box here. The build system still needs to be generated from
    command line, but you can build and debug the project conveniently in Eclipse after that.
-4. Set the `BBB_ROOTFS` Eclipse variable and the toolchain binary path correctly in the project
+4. Set the `RASPBIAN_ROOTFS` Eclipse variable and the toolchain binary path correctly in the project
    settings to make full use of the Eclipse indexer.
-5. If the `tcf-agent` is running on the BBB, you should be able to connect to it using
+5. If the `tcf-agent` is running on the Raspberry Pi, you should be able to connect to it using
    the TCF plugin.
 6. If you are connected, right click on the generated image in the build tree and select
    `Debug As` &rarr; `Remote Application` to perform remote debugging
