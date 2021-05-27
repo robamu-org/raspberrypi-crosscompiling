@@ -66,7 +66,14 @@ You can also run `pacman -S mingw-w64-x86_64-toolchain` to install the full buil
    Note that you can add the commands in step 2 and step 3 to the `~/.bashrc` to set the path
    and the environment variable up permanently
 
-4. Build the application using CMake. Run the following commands inside the repository
+4. Set the Raspberry Pi version by setting the `RASPBERRY_VERSION` environmental variable, for
+   example like this for the Raspberry Pi 4
+   
+   ```sh
+   export RASPBERRY_VERSION=4
+   ```
+   
+5. Build the application using CMake. Run the following commands inside the repository
 
    ```sh
    mkdir build && cd build
@@ -75,7 +82,7 @@ You can also run `pacman -S mingw-w64-x86_64-toolchain` to install the full buil
    chmod +x hello
    ```
  
-5. Transfer to application to the Raspberry Pi and run it to test it
+6. Transfer to application to the Raspberry Pi and run it to test it
 
    ```sh
    scp hello <username>@raspberrypi.local:/tmp
@@ -144,7 +151,14 @@ Instructions for an Ubuntu host
    Note that you can add the commands in step 2 and step 3 to the `~/.bashrc` to set the path
    and the environment variable up permanently.
 
-4. Build the application using CMake. Run the following commands inside the repository
+4. Set the Raspberry Pi version by setting the `RASPBERRY_VERSION` environmental variable, for
+   example like this for the Raspberry Pi 4
+   
+   ```sh
+   export RASPBERRY_VERSION=4
+   ```
+
+5. Build the application using CMake. Run the following commands inside the repository
 
    ```sh
    mkdir build && cd build
@@ -153,7 +167,7 @@ Instructions for an Ubuntu host
    chmod +x hello
    ```
 
-5. Transfer to application to the Raspberry Pi and run it to test it
+6. Transfer to application to the Raspberry Pi and run it to test it
 
    ```sh
    scp hello <username>@raspberrypi.local:/tmp
@@ -164,7 +178,7 @@ Instructions for an Ubuntu host
 
 # <a id="rootfs"></a> Cloning the root filesystem
 
-You can also download a basic root filesystem with `libgpiod` installed
+You can also download a basic root filesystem for the Raspberry Pi 4 with `libgpiod` installed
 from [here](https://drive.google.com/file/d/10o7Mrp4hzJyqTw3xzyr4AQDCxJSEvYIS/view?usp=sharing).
 
 ## Linux Host
