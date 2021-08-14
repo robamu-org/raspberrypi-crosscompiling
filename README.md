@@ -20,7 +20,7 @@ Instructions for an Ubuntu host. The scripts `rpi3-env-set.sh` and `rpi4-env-set
 most of the steps specified here and are provided for convenience.
 
 1. You can download cross-compile toolchains built with `crosstool-ng` from
-   [here](https://www.dropbox.com/sh/zjaex4wlv5kcm6q/AAABBFfmZSRZ7GE7ok-7vTE6a?dl=0).
+   [here](https://www.dropbox.com/sh/gn9bo472yalknra/AABOghC1ym1CmjL8_XZSzGdma?dl=0).
 
    You can test the toolchain with `armv8-rpi4-linux-gnueabihf-gcc --version`. Copy the path
    containing the toolchain binaries. It is going to be required later.
@@ -184,7 +184,7 @@ You can also run `pacman -S mingw-w64-x86_64-toolchain` to install the full buil
 # <a id="rootfs"></a> Cloning the root filesystem
 
 You can also download a basic root filesystem for the Raspberry Pi 4 with `libgpiod` installed
-from [here](https://drive.google.com/file/d/10o7Mrp4hzJyqTw3xzyr4AQDCxJSEvYIS/view?usp=sharing).
+from [here](https://www.dropbox.com/sh/47vfp0r4kgnanpy/AAASZpbcuMD34S-G0BVXz5SKa?dl=0).
 
 ## Linux Host
 
