@@ -14,83 +14,6 @@ for remote debugging with Eclipse.
 4. Optional: `tcf-agent` running on the Raspberry Pi for remote debugging with Eclipse. See the
    related [chapter](#tcfagent) for more information.
 
-# Windows
-
-There are  two options to cross-compile on Windows: Use the native tools and the Unix environment
-provided by MinGW64 or perform the Linux steps in WSL2. If you want to use WLS2, follow the Linux
-instructions (not tested yet, but should work). The following instructions show
-how to cross-compile using MinGW64. It is still recommended to clone the sysroot with Linux
-tools, using WSL2, because cloning with the MinGW64 can be problematic.
-
-Install [MSYS2](https://www.msys2.org/) first.
-
-Prepare MSYS2 by running the following commands in MinGW64
-
-```
-pacman -S mingw-w64-x86_64-cmake mingw-w64-x86_64-make rsync
-```
-
-You can also run `pacman -S mingw-w64-x86_64-toolchain` to install the full build chain with
-`gcc` and `g++`
-
-1. Install the correct [ARM Linux cross-compile toolchain provided by SysProgs](https://gnutoolchains.com/raspberry/).
-   You can find out the distribution release of your Raspberry Pi by running `cat /etc/rpi-issue`.
-
-   Test the toolchain by running:
-
-   ```sh
-   arm-linux-gnueabihf-gcc --version
-   ``` 
-
-2. Navigate into the toolchain folder inside MinGW64.
-
-   ```sh
-   cd <toolchainPath>/bin
-   pwd
-   ```
-
-   Copy the path and run the following command to add the tool binary path to the MinGW64 path
-
-   ```sh
-   export PATH=$PATH:"<copied path>"
-   ```
-
-3. It is assumed the root filesystem is located somewhere on the host machine (see [rootfs](#rootfs)
-   chapter for more information how to do this). Set in in an environmental variable which 
-   `cmake` can use
-
-   ```sh
-   export LINUX_ROOTFS="<pathToRootfs>"
-   ```
-
-   Note that you can add the commands in step 2 and step 3 to the `~/.bashrc` to set the path
-   and the environment variable up permanently
-
-4. Set the Raspberry Pi version by setting the `RASPBERRY_VERSION` environmental variable, for
-   example like this for the Raspberry Pi 4
-   
-   ```sh
-   export RASPBERRY_VERSION=4
-   ```
-   
-5. Build the application using CMake. Run the following commands inside the repository
-
-   ```sh
-   mkdir build && cd build
-   cmake -G "MinGW Makefiles" ..
-   cmake --build . -j
-   chmod +x hello
-   ```
- 
-6. Transfer to application to the Raspberry Pi and run it to test it
-
-   ```sh
-   scp hello <username>@raspberrypi.local:/tmp
-   ssh <username>@raspberrypi.local
-   cd /tmp
-   ./hello
-   ```
-
 # Linux
 
 Instructions for an Ubuntu host. The scripts `rpi3-env-set.sh` and `rpi4-env-set.sh` provide
@@ -174,6 +97,81 @@ most of the steps specified here and are provided for convenience.
    chmod +x hello
    ```
 
+6. Transfer to application to the Raspberry Pi and run it to test it
+
+   ```sh
+   scp hello <username>@raspberrypi.local:/tmp
+   ssh <username>@raspberrypi.local
+   cd /tmp
+   ./hello
+   ```
+
+# Windows
+
+There are  two options to cross-compile on Windows: Use the native tools and the Unix environment
+provided by MinGW64 or perform the Linux steps in WSL2. If you want to use WLS2, follow the Linux
+instructions (not tested yet, but should work). The following instructions show
+how to cross-compile using MinGW64. Install [MSYS2](https://www.msys2.org/) first.
+
+Prepare MSYS2 by running the following commands in MinGW64
+
+```
+pacman -S mingw-w64-x86_64-cmake mingw-w64-x86_64-make rsync
+```
+
+You can also run `pacman -S mingw-w64-x86_64-toolchain` to install the full build chain with
+`gcc` and `g++`
+
+1. Install the correct ARM Linux cross-compile 
+   [toolchain provided by SysProgs](https://gnutoolchains.com/raspberry/).
+   You can find out the distribution release of your Raspberry Pi by running `cat /etc/rpi-issue`.
+
+   Test the toolchain by running:
+
+   ```sh
+   arm-linux-gnueabihf-gcc --version
+   ``` 
+
+2. Navigate into the toolchain folder inside MinGW64.
+
+   ```sh
+   cd <toolchainPath>/bin
+   pwd
+   ```
+
+   Copy the path and run the following command to add the tool binary path to the MinGW64 path
+
+   ```sh
+   export PATH=$PATH:"<copied path>"
+   ```
+
+3. It is assumed the root filesystem is located somewhere on the host machine (see [rootfs](#rootfs)
+   chapter for more information how to do this). Set in in an environmental variable which 
+   `cmake` can use
+
+   ```sh
+   export LINUX_ROOTFS="<pathToRootfs>"
+   ```
+
+   Note that you can add the commands in step 2 and step 3 to the `~/.bashrc` to set the path
+   and the environment variable up permanently
+
+4. Set the Raspberry Pi version by setting the `RASPBERRY_VERSION` environmental variable, for
+   example like this for the Raspberry Pi 4
+   
+   ```sh
+   export RASPBERRY_VERSION=4
+   ```
+   
+5. Build the application using CMake. Run the following commands inside the repository
+
+   ```sh
+   mkdir build && cd build
+   cmake -G "MinGW Makefiles" ..
+   cmake --build . -j
+   chmod +x hello
+   ```
+ 
 6. Transfer to application to the Raspberry Pi and run it to test it
 
    ```sh
@@ -277,8 +275,10 @@ which might result in errors when cross-compiling and cross-linking. It is recom
 the following commands in addition to the `rsync` command on Windows:
 
 ```sh
-scp <user_name>@<ip-address>:/lib/arm-linux-gnueabihf/{libc.so.6,ld-linux-armhf.so.3,libm.so.6} <rootfs_path>/lib/arm-linux-gnueabihf
-scp <user_name>@<ip-address>:/usr/lib/arm-linux-gnueabihf/{libpthread.so,libc.so,librt.so} <rootfs_path>/usr/lib/arm-linux-gnueabihf
+scp <user_name>@<ip-address>:/lib/arm-linux-gnueabihf/{libc.so.6,ld-linux-armhf.so.3,libm.so.6} \ 
+   <rootfs_path>/lib/arm-linux-gnueabihf
+scp <user_name>@<ip-address>:/usr/lib/arm-linux-gnueabihf/{libpthread.so,libc.so,librt.so} \
+   <rootfs_path>/usr/lib/arm-linux-gnueabihf
 ```
 
 For more information on issues which can occur when cloning the root filesystem,
