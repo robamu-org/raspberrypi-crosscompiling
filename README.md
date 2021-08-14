@@ -7,7 +7,7 @@ for remote debugging with Eclipse.
 
 # Prerequisites for cross-compiling
 
-1. `CMake` installed
+1. `cmake` installed
 2. ARM Linux cross compiler installed
 3. Raspberry Pi sysroot folder mirrored on the host machine, using `rsync` and `scp`.
    See the related [chapter](#rootfs) for more information.
@@ -57,10 +57,10 @@ You can also run `pacman -S mingw-w64-x86_64-toolchain` to install the full buil
 
 3. It is assumed the root filesystem is located somewhere on the host machine (see [rootfs](#rootfs)
    chapter for more information how to do this). Set in in an environmental variable which 
-   `CMake` can use
+   `cmake` can use
 
    ```sh
-   export RASPBIAN_ROOTFS="<pathToRootfs>"
+   export LINUX_ROOTFS="<pathToRootfs>"
    ```
 
    Note that you can add the commands in step 2 and step 3 to the `~/.bashrc` to set the path
@@ -93,9 +93,16 @@ You can also run `pacman -S mingw-w64-x86_64-toolchain` to install the full buil
 
 # Linux
 
-Instructions for an Ubuntu host
+Instructions for an Ubuntu host. The scripts `rpi3-env-set.sh` and `rpi4-env-set.sh` provide
+most of the steps specified here and are provided for convenience.
 
-1. Install the pre-built ARM cross-compile with the following command
+1. You can download cross-compile toolchains built with `crosstool-ng` from
+   [here](https://www.dropbox.com/sh/zjaex4wlv5kcm6q/AAABBFfmZSRZ7GE7ok-7vTE6a?dl=0).
+
+   You can test the toolchain with `armv8-rpi4-linux-gnueabihf-gcc --version`. Copy the path
+   containing the toolchain binaries. It is going to be required later.
+
+   Alternatively, install a pre-built ARM cross-compile with the following command
 
     ```sh
     wget https://github.com/Pro/raspi-toolchain/releases/latest/download/raspi-toolchain.tar.gz
@@ -142,10 +149,10 @@ Instructions for an Ubuntu host
 
 3. It is assumed the root filesystem is located somewhere on the host machine (see [rootfs](#rootfs)
    chapter for more information how to do this). Set in in an environmental variable which 
-   `CMake` can use
+   `cmake` can use
 
    ```sh
-   export RASPBIAN_ROOTFS="<pathToRootfs>"
+   export LINUX_ROOTFS="<pathToRootfs>"
    ```
 
    Note that you can add the commands in step 2 and step 3 to the `~/.bashrc` to set the path
