@@ -16,12 +16,12 @@ endif()
 
 # CROSS_COMPILE also needs to be set accordingly or passed to the CMake command
 
-if(NOT DEFINED ENV{RASPBIAN_ROOTFS})
+if(NOT DEFINED ENV{LINUX_ROOTFS})
 	message(FATAL_ERROR 
-		"Define the RASPBIAN_ROOTFS variable to point to the Raspberry Pi rootfs."
+		"Define the LINUX_ROOTFS variable to point to the Raspberry Pi rootfs."
 	)
 else()
-	set(SYSROOT_PATH "$ENV{RASPBIAN_ROOTFS}")
+	set(SYSROOT_PATH "$ENV{LINUX_ROOTFS}")
 	message(STATUS "Raspberry Pi sysroot: ${SYSROOT_PATH}")
 endif()
 
@@ -69,26 +69,6 @@ endif()
 # Define the compiler
 set(CMAKE_C_COMPILER ${CROSS_COMPILE_CC})
 set(CMAKE_CXX_COMPILER ${CROSS_COMPILE_CXX})
-
-# List of library dirs where LD has to look. Pass them directly through gcc. 
-# LD_LIBRARY_PATH is not evaluated by arm-*-ld
-set(LIB_DIRS 
-	"/opt/cross-pi-gcc/arm-linux-gnueabihf/lib"
-	"/opt/cross-pi-gcc/lib"
-	"${SYSROOT_PATH}/opt/vc/lib"
-	"${SYSROOT_PATH}/lib/${CROSS_COMPILE}"
-	"${SYSROOT_PATH}/usr/local/lib"
-	"${SYSROOT_PATH}/usr/lib/${CROSS_COMPILE}"
-	"${SYSROOT_PATH}/usr/lib"
-	"${SYSROOT_PATH}/usr/lib/${CROSS_COMPILE}/blas"
-	"${SYSROOT_PATH}/usr/lib/${CROSS_COMPILE}/lapack"
-)
-# You can additionally check the linker paths if you add the 
-# flags ' -Xlinker --verbose'
-set(COMMON_FLAGS "-I${SYSROOT_PATH}/usr/include")
-foreach(LIB ${LIB_DIRS})
-	set(COMMON_FLAGS "${COMMON_FLAGS} -L${LIB} -Wl,-rpath-link,${LIB}")
-endforeach()
 
 set(CMAKE_PREFIX_PATH 
 	"${CMAKE_PREFIX_PATH}"
